@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 輸入群組名稱的 EditText -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/group_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="群組名稱">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/group_name_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 預覽並新增群組封面照的 ImageView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="群組封面照" />
+
+            <ImageView
+                android:id="@+id/image_group"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:onClick="onSelectCoverImageClicked"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_avatar_group" />
+
+        </LinearLayout>
+
+        <!-- 具有checkbox的好友清單 -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/add_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <!-- 完成按鈕 -->
+        <Button
+            android:id="@+id/finish_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="完成"
+            android:onClick="onFinishClicked" />
+
+    </LinearLayout>
+</ScrollView>

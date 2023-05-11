@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="gray">#FFB2B2B2</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="yellow_A700">#FFFFD600</color>
+    <color name="green_A700">#FFAEEA00</color>
+    <color name="cyan_A700">#FF00B8D4</color>
+    <color name="violet_A700">#FF6200EA</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="main_color_01">#474D21</color>
+    <color name="main_color_02">#9BA07B</color>
+    <color name="main_color_03">#D2D2B7</color>
+    <color name="main_color_04">#E2E1CD</color>
+    <color name="main_color_05">#EEE6D7</color>
+
+    <color name="light_blue_500">#03A9F4</color>
+    <color name="cyan_500">#00BCD4</color>
+    <color name="teal_500">#009688</color>
+    <color name="green_500">#4CAF50</color>
+    <color name="light_green_500">#8BC34A</color>
+
+    <color name="tumblr_primary">#36465D</color>
+    <color name="tumblr_orange">#F2992E</color>
+    <color name="tumblr_green">#56BC8A</color>
+    <color name="tumblr_white">#FFFFFF</color>
+    <color name="tumblr_grey">#748089</color>
+    <color name="tumblr_blue">#4AA8D8</color>
+    <color name="tumblr_red">#D95E40</color>
+
+    <color name="path_primary">#E62F17</color>
+    <color name="path_orange">#FF9500</color>
+    <color name="path_blue">#1774E6</color>
+    <color name="path_black">#403B36</color>
+    <color name="path_green">#5FB336</color>
+    <color name="path_purple">#49098A</color>
+    <color name="translucent">#4DFFFFFF</color>
+
+    <!-- 輸入框文字的顔色 -->
+    <color name="stroke_color_gray">#60000000</color>
+    <color name="text_gray">#666666</color>
+    <color name="text_black">#DD000000</color>
+
+
+    <color name="blue">#0000FF</color>
+    <color name="red">#FF0000</color>
+</resources>

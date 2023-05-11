@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    tools:replace="android:theme"
+    android:theme="@style/Theme.TMPDevelop_D"
+    <array name="icons_main">
+        <item>@drawable/ic_baseline_edit_location_alt_24</item>
+        <item>@drawable/ic_baseline_edit_note_24</item>
+        <item>@drawable/ic_baseline_wrong_location_24</item>
+        <item>@drawable/ic_baseline_save_24</item>
+    </array>
+    <array name="colors_main">
+        <item>@color/main_color_02</item>
+        <item>@color/main_color_02</item>
+        <item>#EC4657</item>
+        <item>@color/main_color_02</item>
+    </array>
+    <array name="icons_sub">
+        <item>@drawable/ic_baseline_more_horiz_24</item>
+        <item>@drawable/ic_baseline_location_on_24</item>
+        <item>@drawable/ic_baseline_star_24</item>
+        <item>@drawable/ic_baseline_star_24</item>
+        <item>@drawable/ic_baseline_star_24</item>
+        <item>@drawable/ic_baseline_transparent</item>
+        <item>@drawable/ic_baseline_transparent</item>
+        <item>@drawable/ic_baseline_transparent</item>
+        <item>@drawable/ic_baseline_transparent</item>
+        <item>@drawable/ic_baseline_transparent</item>
+        <item>@drawable/ic_baseline_transparent</item>
+        <item>@drawable/ic_baseline_transparent</item>
+    </array>
+    <array name="colors_sub">
+        <item>@android:color/white</item>
+        <item>@android:color/darker_gray</item>
+        <item>#D96DB1</item>
+        <item>#E1AD2D</item>
+        <item>#98F6FB</item>
+        <item>@android:color/white</item>
+        <item>@android:color/white</item>
+        <item>@android:color/white</item>
+        <item>@android:color/white</item>
+        <item>@android:color/white</item>
+        <item>@android:color/white</item>
+        <item>@android:color/white</item>
+    </array>
+</resources>

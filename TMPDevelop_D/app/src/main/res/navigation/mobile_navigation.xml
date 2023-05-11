@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_group">
+
+    <fragment
+        android:id="@+id/navigation_map"
+        android:name="com.example.tmpdevelop_d.MapFragment"
+        android:label="@string/title_map"
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_navigation_map_to_groupSelectFragment"
+            app:destination="@id/groupSelectFragment"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_navigation_map_to_costInfoShowFragment"
+            app:destination="@id/costInfoShowFragment"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_cost"
+            app:destination="@id/navigation_cost" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_group"
+        android:name="com.example.tmpdevelop_d.GroupFragment"
+        android:label="@string/title_group"
+        tools:layout="@layout/fragment_group" >
+        <action
+            android:id="@+id/action_navigation_group_to_navigation_map"
+            app:destination="@id/navigation_map" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_cost"
+        android:name="com.example.tmpdevelop_d.CostFragment"
+        android:label="@string/title_ledger"
+        tools:layout="@layout/fragment_cost" />
+    <fragment
+        android:id="@+id/groupSelectFragment"
+        android:name="com.example.tmpdevelop_d.GroupSelectFragment"
+        android:label="選擇團隊"
+        tools:layout="@layout/fragment_group_select" >
+        <action
+            android:id="@+id/action_groupSelectFragment_to_placeInfoInputFragment"
+            app:destination="@id/placeInfoInputFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/placeInfoInputFragment"
+        android:name="com.example.tmpdevelop_d.PlaceInfoInputFragment"
+        android:label="輸入行程資訊"
+        tools:layout="@layout/fragment_place_info_input" >
+        <action
+            android:id="@+id/action_placeInfoInputFragment_to_expenseInputFragment"
+            app:destination="@id/expenseInputFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/expenseInputFragment"
+        android:name="com.example.tmpdevelop_d.ExpenseInputFragment"
+        android:label="輸入行程消費"
+        tools:layout="@layout/fragment_expense_input">
+        <argument
+            android:name="tripInfo"
+            android:defaultValue="None">
+
+        </argument>
+        <action
+            android:id="@+id/action_expenseInputFragment_to_participantSelectFragment"
+            app:destination="@id/participantSelectFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/participantSelectFragment"
+        android:name="com.example.tmpdevelop_d.ParticipantSelectFragment"
+        android:label="選擇參與消費的成員"
+        tools:layout="@layout/fragment_participant_select" >
+        <action
+            android:id="@+id/action_participantSelectFragment_to_payerSelectFragment"
+            app:destination="@id/payerSelectFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/payerSelectFragment"
+        android:name="com.example.tmpdevelop_d.PayerSelectFragment"
+        android:label="選擇付款者"
+        tools:layout="@layout/fragment_payer_select" >
+        <action
+            android:id="@+id/action_payerSelectFragment_to_confirmationFragment"
+            app:destination="@id/confirmationFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/groupSelectFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/confirmationFragment"
+        android:name="com.example.tmpdevelop_d.ConfirmationFragment"
+        android:label="確認消費資訊"
+        tools:layout="@layout/fragment_confirmation" >
+        <argument android:name="tripInfo"
+            android:defaultValue="None">
+        </argument>
+        <argument android:name="friendName"
+            android:defaultValue="None">
+        </argument>
+        <argument android:name="moneyAmount"
+            android:defaultValue="None">
+        </argument>
+        <action
+            android:id="@+id/action_confirmationFragment_to_navigation_map"
+            app:destination="@id/navigation_map" />
+    </fragment>
+    <fragment
+        android:id="@+id/costInfoShowFragment"
+        android:name="com.example.tmpdevelop_d.CostInfoShowFragment"
+        android:label="顯示已儲存的消費"
+        tools:layout="@layout/fragment_cost_info_show" />
+</navigation>

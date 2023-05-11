@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="76dp">
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/single_row_group_avatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+        android:scaleType="centerCrop"
+        app:strokeColor="@color/main_color_01"
+        android:padding="1dp"
+        app:strokeWidth="2dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        app:srcCompat="@drawable/avatar_group" />
+
+    <TextView
+        android:id="@+id/single_row_group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="8dp"
+        android:text="默認團隊"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="200dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="40dp">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/single_row_group_friend_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="成員清單"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </HorizontalScrollView>
+
+    </RelativeLayout>
+
+    <RadioButton
+        android:id="@+id/single_row_group_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp" />
+
+</RelativeLayout>

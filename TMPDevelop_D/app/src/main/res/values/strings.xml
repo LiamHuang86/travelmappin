@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">TMPDevelop_D</string>
+    <string name="menu_map_title">地圖</string>
+    <string name="menu_groups_title">團隊</string>
+    <string name="menu_costs_title">帳本</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="image_btn">image_btn</string>
+    <string name="tab_layout">Tab Layout</string>
+    <string name="img_btn">img_btn</string>
+    <string name="tab">tab</string>
+    <string name="txtID">電子信箱</string>
+    <string name="txtPW">密碼</string>
+    <string name="signup">註冊</string>
+    <string name="login">登入</string>
+    <string name="txtv02">使用其他帳號登入</string>
+    <string name="usernameview">用戶名稱</string>
+    <plurals name="member_count">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
+    <string name="title_map">地圖</string>
+    <string name="title_group">群組</string>
+    <string name="title_ledger">賬本</string>
+    <string name="google_maps_key">AIzaSyBgHNt_cwE4HGzLhPBvwRWjBW8Wg9AEWwY</string>
+    <!-- Trip Info -->
+    <string name="trip_name">trip_name</string>
+    CustomListView with Checkbox
+    <string name="friend_name">friend_name</string>
+    <string name="money_amount">money_amount</string>
+    <string name="totalmembers">群組人數: %d</string>
+
+
+    <string name="Tab1">日</string>
+    <string name="Tab2">月</string>
+    <string name="Tab3">年</string>
+    <string name="btn_add">新增</string>
+    <string name="txt1">人</string>
+    <string name="txt2">地點</string>
+    <string name="txt3">金額</string>
+    <string name="txt4">消費類型</string>
+    <string name="txt5">行程</string>
+    <string name="average">分帳金額</string>
+    <string name="CostTitle">帳本</string>
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+</resources>

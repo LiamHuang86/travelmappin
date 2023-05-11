@@ -1,0 +1,92 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/main_color_02</item>
+        <item name="colorPrimaryVariant">@color/main_color_01</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/main_color_01</item>
+        <item name="colorSecondaryVariant">@color/main_color_01</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+
+        <!-- Add these two lines to change the background and text color of the app label -->
+
+        <item name="android:actionBarStyle">@style/MyActionBar</item> <!-- Add this style to set the text color of the ActionBar title -->
+
+        <item name="android:windowBackground">#EEE6D7</item>
+        <item name="android:colorBackground">@color/white</item> <!-- Change the background color of the ActionBar -->
+        <item name="android:titleTextColor">#9BA07B</item> <!-- Change the text color of the ActionBar title -->
+
+        <!-- 改變 ActionBar title 的文字顔色 -->
+        <item name="actionBarTheme">@style/ThemeOverlay.Actionbar</item>
+    </style>
+
+    <!-- Add this style to set the text color of the ActionBar title -->
+    <style name="MyActionBar" parent="Widget.MaterialComponents.ActionBar.Primary">
+        <item name="titleTextColor">#9BA07B</item>
+    </style>
+
+    <!-- Action Bar 標題使用的 Style -->
+    <style name="ThemeOverlay.Actionbar" parent="ThemeOverlay.MaterialComponents.ActionBar.Surface" >
+        <item name="android:textColorPrimary">@color/main_color_02</item>
+    </style>
+
+    <!-- 方形 Button 使用的 Style -->
+    <style name="fab_square" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <!-- DatePicker使用的Style(待完善) -->
+    <style name="date_picker" parent="Theme.Material3.DayNight">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/main_color_02</item>
+        <item name="colorPrimaryVariant">@color/main_color_01</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="MaterialCalendarTheme" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!-- just override the colors used in the default style -->
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/main_color_02</item>
+        <item name="materialCalendarHeaderTitle">@style/date_text_appearance</item>
+    </style>
+
+    <style name="date_text_appearance" parent="@style/TextAppearance.AppCompat">
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/date_picker_font_size</item>
+    </style>
+
+    <style name="MyTimePickerDialogStyle" parent="@style/ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/main_color_02</item>
+        <item name="colorControlActivated">@color/main_color_01</item>
+        <item name="android:numbersTextColor">@color/path_primary</item>
+        <item name="android:numbersSelectorColor">@color/green_A700</item>
+        <item name="android:numbersBackgroundColor">@color/cyan_500</item>
+        <item name="android:headerBackground">#ffe082</item>
+        <item name="android:numbersInnerTextColor">#FFD600</item>
+        <item name="android:amPmTextColor">#9c27b0</item>
+    </style>
+
+    <style name="PrefixTextAppearance">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="roundedImageViewRounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

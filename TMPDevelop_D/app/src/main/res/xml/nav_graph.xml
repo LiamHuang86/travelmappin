@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/groupFragment">
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.tmpdevelop_d.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
+        android:id="@+id/groupFragment"
+        android:name="com.example.tmpdevelop_d.GroupFragment"
+        android:label="Group"
+        tools:layout="@layout/fragment_group" />
+
+    <fragment
+        android:id="@+id/costFragment"
+        android:name="com.example.tmpdevelop_d.CostFragment"
+        android:label="Cost"
+        tools:layout="@layout/fragment_cost" />
+
+</navigation>
