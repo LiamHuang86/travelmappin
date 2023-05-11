@@ -7,6 +7,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -101,6 +102,15 @@ class CostFragment : Fragment() {
                 dialog.window?.setBackgroundDrawableResource(android.R.color.white)
                 dialog.show()
             }
+        })
+        // 監聽裝置的回退鍵事件，防止返回上一個頁面
+        view.isFocusableInTouchMode = true
+        view.requestFocus()
+        view.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                return@OnKeyListener true
+            }
+            false
         })
     }
 

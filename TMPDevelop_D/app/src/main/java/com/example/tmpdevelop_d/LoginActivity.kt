@@ -4,6 +4,7 @@ package com.example.tmpdevelop_d
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -69,4 +70,10 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(this, ForgotPasswordActivity::class.java)
         startActivity(intent)
     }
+
+    override fun onBackPressed() {
+        // 不執行 super.onBackPressed()，防止返回上一個頁面
+    }
 }
+
+

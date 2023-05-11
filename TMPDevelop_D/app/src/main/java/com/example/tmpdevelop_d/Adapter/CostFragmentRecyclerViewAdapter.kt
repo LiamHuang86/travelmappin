@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmpdevelop_d.Costs.AverageCost
 import com.example.tmpdevelop_d.R
@@ -32,6 +33,12 @@ class CostFragmentRecyclerViewAdapter : RecyclerView.Adapter<CostFragmentRecycle
         holder.payerName.text = item.payerName
         holder.placeName.text = item.placeName
         holder.amount.text = String.format("%.2f", item.amount)
+        // set color based on the value of amount
+        if (item.amount >= 0) {
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.blue))
+        } else {
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.red))
+        }
         holder.itemView.setOnClickListener{
             listener?.onItemClick(item)
         }
