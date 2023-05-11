@@ -12,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +44,7 @@ class CostFragment : Fragment() {
         adapter = CostFragmentRecyclerViewAdapter()
         recyclerView.adapter = adapter
         totalAmountTextView = view.findViewById(R.id.totalAmountTextView)
+
         return view
     }
 

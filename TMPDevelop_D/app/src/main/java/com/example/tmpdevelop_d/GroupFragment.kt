@@ -8,21 +8,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.viewpager.widget.ViewPager
 import com.example.tmpdevelop_d.Adapter.ViewPagerAdapter
-import com.example.tmpdevelop_d.databinding.FragmentGroupBinding
 import com.google.android.material.tabs.TabLayout
-
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class GroupFragment : Fragment() {
 
     private lateinit var viewPager: ViewPager
     private lateinit var tabLayout: TabLayout
     private lateinit var imgBtn: ImageButton
+
+    // 初始化Firebase實例
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+    private val db = FirebaseFirestore.getInstance()
 
     companion object {
         const val REQUEST_CODE_ACCOUNT_ACTIVITY = 1
@@ -33,7 +37,6 @@ class GroupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_group, container, false)
-
 
         viewPager = root.findViewById(R.id.view_pager)
         viewPager.adapter = ViewPagerAdapter(childFragmentManager)
@@ -46,18 +49,15 @@ class GroupFragment : Fragment() {
             val intent = Intent(requireContext(), AccountActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ACCOUNT_ACTIVITY)
         }
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         return root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //val navController = findNavController()
-        //NavigationUI.setupActionBarWithNavController(activity as AppCompatActivity, navController)
-
-        // 設置Toolbar標題
-        //NavigationUI.setupWithNavController(binding.toolbar, navController)
+        loadUserImage()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -69,6 +69,27 @@ class GroupFragment : Fragment() {
                 // 设置 ImageButton 的图片
                 imgBtn.setImageURI(imageUri)
             }
+        }
+    }
+
+    private fun loadUserImage() {
+        currentUser?.let { user ->
+            // 查詢uid與當前用戶uid匹配的文件
+            db.collection("Users").whereEqualTo("uid", user.uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        // 獲取imageUrl字段的值
+                        val imageUrl = document.getString("imageUrl")
+                        // 如果 imageUrl 不為空，並且 getActivity 不為 null，則使用 Glide 加載到 imgBtn，並轉換為圓形
+                        if (!imageUrl.isNullOrEmpty() && activity != null) {
+                            Glide.with(this)
+                                .load(imageUrl)
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(imgBtn)
+                        }
+                    }
+                }
         }
     }
 }
