@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.KeyEvent
@@ -69,36 +70,45 @@ class CostFragment : Fragment() {
         }
 
         // 設置 RecyclerView 的點擊事件
-        adapter.setOnItemClickListener(object :
-            CostFragmentRecyclerViewAdapter.OnItemClickListener {
+        adapter.setOnItemClickListener(object : CostFragmentRecyclerViewAdapter.OnItemClickListener {
             override fun onItemClick(item: AverageCost) {
                 Log.d("CostFragment", "RecyclerView item clicked: ${item.placeName}")
-                // 使用 AverageCost 對象的信息更新對話框
+
                 val title = SpannableString(item.placeName)
-                if (title != null) {
-                    title.setSpan(
-                        ForegroundColorSpan(Color.BLACK),
-                        0,
-                        title.length,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+                title?.setSpan(
+                    ForegroundColorSpan(Color.BLACK),
+                    0,
+                    title.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                val message = SpannableStringBuilder().apply {
+                    append("群組名稱: ${item.groupName}\n")
+                    append("付款人: ${item.payerName}\n")
+                    append("地點: ${item.placeName}\n")
+                    append("消費總額: ${item.expense}\n")
+                    append("參與消費人數: ${item.friendInfoList.size}\n")
+                    append("應付/應收金額: ${String.format("%.2f", item.amount)}\n")
+                    append("平均消費: ${String.format("%.2f", item.averageCost)}\n")
+                    append("日期: ${item.date}\n")
+                    append("時間: ${item.hour}點  ${item.minute}分\n")
+                    // 這裡只顯示朋友列表的大小，您可能需要適當的方式來顯示朋友列表的資訊
+
                 }
 
-                val message =
-                    SpannableString(
-                        "付款人: ${item.payerName}\n地點: ${item.placeName}\n應付金額: ${String.format("%.2f", item.amount)}"
-                    )
                 message.setSpan(
                     ForegroundColorSpan(Color.BLACK),
                     0,
                     message.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
+
                 val dialog = AlertDialog.Builder(requireContext())
                     .setTitle(title)
                     .setMessage(message)
                     .setPositiveButton("確認", null)
                     .create()
+
                 dialog.window?.setBackgroundDrawableResource(android.R.color.white)
                 dialog.show()
             }

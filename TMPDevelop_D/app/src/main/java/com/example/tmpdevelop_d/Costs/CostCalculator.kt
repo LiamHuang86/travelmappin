@@ -16,8 +16,6 @@ class CostCalculator : ViewModel() {
     private val _averageCostListLiveData = MutableLiveData<List<AverageCost>>()
     val averageCostListLiveData: LiveData<List<AverageCost>> = _averageCostListLiveData
 
-
-
     fun calculateAverageCosts() {
         Log.d(TAG, "calculateAverageCosts called")
         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -47,12 +45,34 @@ class CostCalculator : ViewModel() {
                             // 將計算後的資料加入列表
                             val payerName = cost.payerName
                             val placeName = cost.placeName
-                            averageCostList.add(AverageCost(uid, amount, payerName, placeName))
+                            val groupName = cost.groupName
+                            val date = cost.date
+                            val hour = cost.hour
+                            val minute = cost.minute
+                            val friendInfoList = cost.friendInfoList
+                            val placeId = costSnapshot.key // 文檔ID作為placeId
+
+                            averageCostList.add(
+                                AverageCost(
+                                    uid,
+                                    amount,
+                                    payerName,
+                                    placeName,
+                                    0, // timestamp removed
+                                    averageCost,
+                                    groupName,
+                                    expense,
+                                    date,
+                                    hour,
+                                    minute,
+                                    friendInfoList,
+                                    placeId // 新增的 placeId 參數
+                                )
+                            )
 
                             totalAmount += amount
 
                             Log.d(TAG, "User: $uid, Amount: $amount, PayerName: $payerName, PlaceName: $placeName")
-
                         }
                     }
                 }
@@ -68,7 +88,6 @@ class CostCalculator : ViewModel() {
             override fun onCancelled(error: DatabaseError) {
                 // 處理錯誤
                 Log.e(TAG, "onCancelled: ${error.message}")
-
             }
         })
     }
