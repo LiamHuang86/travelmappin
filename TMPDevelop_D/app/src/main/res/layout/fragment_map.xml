@@ -161,7 +161,7 @@
         android:layout_height="wrap_content"
         app:button_colors="@array/colors_sub"
         app:button_icons="@array/icons_sub"
-        app:distance="120dp"
+        app:distance="96dp"
         app:icon_close="@drawable/ic_baseline_edit_24"
         app:icon_color="@color/transparent"
         app:icon_menu="@drawable/ic_baseline_edit_24"

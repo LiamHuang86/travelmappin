@@ -246,28 +246,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    private void searchDataFromDatabase() { // 搜尋是否有圖釘的坐標存在於 DataBase
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; //初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前在地圖中心的攝像機的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後10位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
-
+    private void searchDataFromDatabase(Double targetLat, Double targetLng) { // 搜尋是否有圖釘的坐標存在於 DataBase
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("CostInfo");
 
         // 根據緯度和經度進行查詢
-        Query query = ref.orderByChild("latitude").equalTo(targetLatitude);
+        Query query = ref.orderByChild("latitude").equalTo(targetLat);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -277,13 +260,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     // 檢查該筆資料的經度是否與目標經度相同
                     double longitude = childSnapshot.child("longitude").getValue(Double.class);
                     boolean isComplete = childSnapshot.child("isComplete").getValue(Boolean.class);
-                    if (longitude == targetLongitude && isComplete == false) {
+                    if (longitude == targetLng && isComplete == false) {
                         Toast.makeText(getActivity(),"此地點暫未添加消費資訊",Toast.LENGTH_SHORT).show();
                         PlaceInfo.costInfoKey = childSnapshot.getKey(); // 獲取當前資料在 CostInfo 中的索引
                         PlaceInfo.isComplete = false;
                         break;
                     }
-                    if (longitude == targetLongitude && isComplete == true) {
+                    if (longitude == targetLng && isComplete == true) {
                         Toast.makeText(getActivity(),"此地點已有完整的消費資訊",Toast.LENGTH_SHORT).show();
                         PlaceInfo.isComplete = true;
                         Map<String, Object> costInfoMap = new HashMap<>();
@@ -394,27 +377,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void deleteCostInfoFromDatabase() {
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; //初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前在地圖中心的攝像機的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("CostInfo");
 
         // 根據緯度和經度進行查詢
-        Query query = ref.orderByChild("latitude").equalTo(targetLatitude);
+        Query query = ref.orderByChild("latitude").equalTo(lat);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -423,7 +389,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     // 檢查該筆資料的經度是否與目標經度相同
                     double longitude = childSnapshot.child("longitude").getValue(Double.class);
-                    if (longitude == targetLongitude) {
+                    if (longitude == lng) {
                         // 從 Firebase Realtime Database 中刪除 childSnapshot 對應的節點
                         childSnapshot.getRef().removeValue();
                         //Toast.makeText(getActivity(),"已刪除對應的 CostInfo",Toast.LENGTH_SHORT).show();
@@ -577,7 +543,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Place place = Autocomplete.getPlaceFromIntent(data);
 
             mEditText.setText(place.getAddress());
-            PlaceInfo.placeName = place.getName();
+            //PlaceInfo.placeName = place.getName();
+
             //mTextView01.setText(String.format("地點名稱: %s",place.getName()));
             //mTextView02.setText(String.valueOf(place.getLatLng()));
 
@@ -586,13 +553,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     .newLatLngZoom(place.getLatLng(),18.0f));
 
             // 添加一個圖釘
-            new Handler().postDelayed(() -> onAddButtonClick(), 1000);
+            //new Handler().postDelayed(() -> onAddButtonClick(), 1000);
 
             // 檢查當前 LatLng 對應的地點是否已經有 CostInfo 存在
-            new Handler().postDelayed(() -> searchDataFromDatabase(), 1000);
+            //new Handler().postDelayed(() -> searchDataFromDatabase(), 1000);
 
             // 展開圓形展開按鈕主菜單
-            new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1000);
+            //new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1000);
 
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR){
             Status status = Autocomplete.getStatusFromIntent(data);
@@ -670,15 +637,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 .newLatLngZoom(new LatLng(originalLocation.getLatitude(), originalLocation.getLongitude()),18.0f));
 
                         // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
-                        disableScrollMap();
+                        //disableScrollMap();
 
                         // 調用展開圓形展開按鈕主菜單的方法
-                        new Handler().postDelayed(() -> onAddButtonClick(), 1500);
+                        //new Handler().postDelayed(() -> onAddButtonClick(), 1500);
 
                         // 檢查當前 LatLng 對應的地點是否已經有 CostInfo 存在
-                        new Handler().postDelayed(() -> searchDataFromDatabase(), 1500);
+                        //new Handler().postDelayed(() -> searchDataFromDatabase(), 1500);
 
-                        new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1500);
+                        //new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1500);
                     } else {
                         LocationRequest locationRequest = new LocationRequest()
                                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -696,11 +663,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                         .newLatLngZoom(new LatLng(originalLocation.getLatitude(), originalLocation.getLongitude()),18.0f));
 
                                 // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
-                                disableScrollMap();
+                                //disableScrollMap();
 
                                 // 調用展開圓形展開按鈕主菜單的方法
-                                new Handler().postDelayed(() -> onAddButtonClick(), 1500);
-                                new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1500);
+                                //new Handler().postDelayed(() -> onAddButtonClick(), 1500);
+                                //new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1500);
                             }
                         };
                         // Request Location updates
@@ -723,32 +690,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         final CircleMenuView mainMenu = (CircleMenuView) mView.findViewById(R.id.circle_menu_main);
 
         mMap.setOnMarkerClickListener(marker -> {
-            double originalLatitude; // 初始目標緯度
-            double originalLongitude; // 初始目標經度
-            double targetLatitude; // 目標緯度
-            double targetLongitude; // 目標經度
-
             closeAllMenu(); // 關閉並隱藏所有菜單
 
             // 獲取當前圖釘的坐標
-            originalLatitude = marker.getPosition().latitude;
-            originalLongitude = marker.getPosition().longitude;
-
-//          使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字）
-            String formattedLatitude = String.format("%.11f", originalLatitude);
-            String formattedLongitude = String.format("%.11f", originalLongitude);
-            formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-            formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-            targetLatitude = Double.parseDouble(formattedLatitude);
-            targetLongitude = Double.parseDouble(formattedLongitude);
+            lat = marker.getPosition().latitude;
+            lng = marker.getPosition().longitude;
 
             // 以點擊的圖釘為中心移動畫面, moveCamera為瞬間移動, animateCamera有緩衝動畫效果
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(targetLatitude, targetLongitude)));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
 
             disableScrollMap(); // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
 
             // 檢查當前 LatLng 對應的地點是否已經有 CostInfo 存在
-            new Handler().postDelayed(() -> searchDataFromDatabase(), 1080);
+            new Handler().postDelayed(() -> searchDataFromDatabase(lat,lng), 1080);
 
             // 展開主要按鈕菜單
             new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1080);
@@ -774,34 +728,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private boolean onMapLongClick() {
         final CircleMenuView mainMenu = (CircleMenuView) mView.findViewById(R.id.circle_menu_main);
         mMap.setOnMapLongClickListener(latLng -> {
-            double originalLatitude; // 初始目標緯度
-            double originalLongitude; // 初始目標經度
-            double targetLatitude; // 目標緯度
-            double targetLongitude; // 目標經度
-
             //Toast.makeText(getActivity(),"地圖被長按",Toast.LENGTH_SHORT).show();
             closeAllMenu(); // 關閉並隱藏所有菜單
 
             // 獲取當前圖釘的坐標
-            originalLatitude = latLng.latitude;
-            originalLongitude = latLng.longitude;
-
-            // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-            String formattedLatitude = String.format("%.11f", originalLatitude);
-            String formattedLongitude = String.format("%.11f", originalLongitude);
-            formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-            formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-            targetLatitude = Double.parseDouble(formattedLatitude);
-            targetLongitude = Double.parseDouble(formattedLongitude);
-
-            lat = targetLatitude;
-            lng = targetLongitude;
+            lat = latLng.latitude;
+            lng = latLng.longitude;
 
             // 如果使用者通過長按地圖的方式添加新圖釘，則清空之前通過搜索地點功能獲取到的地點名稱
             PlaceInfo.placeName = null;
 
             // 以添加的圖釘為中心移動畫面, moveCamera為瞬間移動, animateCamera有緩衝動畫效果
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
 
             disableScrollMap(); // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
 
@@ -937,33 +875,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     // 顯示使用者所選定圖釘的資訊（注意：若攝像機移動尚未完成，則必須設定一個執行延遲，等待攝像機移動完畢）
     private void showMarkerInfo(){
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
-
         // 在全部圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < markerList.size(); i++){
-            if(targetLatitude == markerList.get(i).lat && targetLongitude == markerList.get(i).lng){
+            if(lat == markerList.get(i).lat && lng == markerList.get(i).lng){
                 Toast.makeText(getActivity(),"儲存圖釘總數量: "+markerList.size()+" | "+"行程序號: "+markerList.get(i).getRouteIndex()+" | "+"地點序號: "+markerList.get(i).getMarkerIndex(),Toast.LENGTH_SHORT).show();
             }
         }
 
         // 在臨時圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 Toast.makeText(getActivity(),"圖釘總數量: "+tempMarkerList.size()+" | "+"行程序號: "+tempMarkerList.get(i).getRouteIndex()+" | "+"地點序號: "+tempMarkerList.get(i).getMarkerIndex(),Toast.LENGTH_SHORT).show();
             }
         }
@@ -974,11 +895,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         final CircleMenuView mainMenu = (CircleMenuView) mView.findViewById(R.id.circle_menu_main);
         boolean markerIsExist = false;
         boolean markerIsTemp = false;
-        int randomMarkerIcon = (int)(Math.random() * 3 + 1); // 跳過序號為0的GoogleMap默認圖釘，隨機添加四個圖釘
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
+        int randomMarkerIcon = (int)(Math.random() * 3 + 1); // 跳過序號為0的GoogleMap默認圖釘，隨機添加一個圖釘
 
         // 自定義圖釘圖標（使用vector格式會報錯，目前使用png格式）
         BitmapDescriptor defaultMarkerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
@@ -990,21 +907,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         BitmapDescriptor starMarkerIcon02 = BitmapDescriptorFactory.fromResource(R.drawable.marker_star_02);
         BitmapDescriptor starMarkerIcon03 = BitmapDescriptorFactory.fromResource(R.drawable.marker_star_03);
 
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
-
         // 在全部圖釘中尋找是否有圖釘和攝影機當前坐標一致
         for(int i = 0; i < markerList.size(); i++){
-            if(targetLatitude == markerList.get(i).lat && targetLongitude == markerList.get(i).lng){
+            if(lat == markerList.get(i).lat && lng == markerList.get(i).lng){
                 markerIsExist = true;
                 markerIsTemp = false;
                 mainMenu.close(false);
@@ -1017,7 +922,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // 在臨時圖釘中尋找是否有圖釘和攝影機當前坐標一致
         for(int i = 0; i < tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 markerIsExist = true;
                 markerIsTemp = true;
                 mainMenu.close(false);
@@ -1029,10 +934,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         if (markerIsExist == false){
-            UserMarker userMarker = new UserMarker(0, markerCount, 0, randomMarkerIcon, targetLatitude, targetLongitude);
+            UserMarker userMarker = new UserMarker(0, markerCount, 0, randomMarkerIcon, lat, lng);
             tempMarkerList.add(userMarker);
 
-            sendNullCostInfoToFireBase(userMarker); // 向雲端添加一筆只包含圖釘資料的 CostInfo
+            //sendNullCostInfoToFireBase(userMarker); // 向雲端添加一筆只包含圖釘資料的 CostInfo
 
             showMarkerInfo(); // 顯示剛才添加圖釘的資訊
             markerCount++;
@@ -1048,26 +953,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         final CircleMenuView subMenu = (CircleMenuView) mView.findViewById(R.id.circle_menu_sub);
         boolean markerIsExist = false;
         boolean markerIsTemp = false;
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
 
         // 在全部圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < markerList.size(); i++){
-            if(targetLatitude == markerList.get(i).lat && targetLongitude == markerList.get(i).lng) {
+            if(lat == markerList.get(i).lat && lng == markerList.get(i).lng) {
                 markerIsExist = true;
                 markerIsTemp = false;
             }
@@ -1075,7 +964,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // 在臨時圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 markerIsExist = true;
                 markerIsTemp = true;
                 mainMenu.close(false);
@@ -1107,26 +996,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         final CircleMenuView mainMenu = (CircleMenuView) mView.findViewById(R.id.circle_menu_main);
         boolean markerIsExist = false;
         boolean markerIsTemp = false;
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
 
         // 在全部圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < markerList.size(); i++){
-            if(targetLatitude == markerList.get(i).lat && targetLongitude == markerList.get(i).lng) {
+            if(lat == markerList.get(i).lat && lng == markerList.get(i).lng) {
                 markerIsExist = true;
                 markerIsTemp = false;
             }
@@ -1134,7 +1007,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // 在臨時圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 markerIsExist = true;
                 markerIsTemp = true;
 
@@ -1184,26 +1057,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         final CircleMenuView mainMenu = (CircleMenuView) mView.findViewById(R.id.circle_menu_main);
         boolean markerIsExist = false;
         boolean markerIsTemp = false;
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
 
         // 在全部圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < markerList.size(); i++){
-            if(targetLatitude == markerList.get(i).lat && targetLongitude == markerList.get(i).lng) {
+            if(lat == markerList.get(i).lat && lng == markerList.get(i).lng) {
                 markerIsExist = true;
                 markerIsTemp = false;
             }
@@ -1211,7 +1068,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // 在臨時圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 markerIsExist = true;
                 markerIsTemp = true;
                 // 獲取當前圖釘的 routeIndex, markerIndex, iconIndex 和 LatLng 並賦值給地點資訊 PlaceInfo
@@ -1285,26 +1142,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         boolean markerIsExist = false;
         boolean markerIsTemp = false;
         int pointCount = 0; // 至少有一個圖釘
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
 
         // 在全部圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for(int i = 0; i < markerList.size(); i++){
-            if(targetLatitude == markerList.get(i).lat && targetLongitude == markerList.get(i).lng) {
+            if(lat == markerList.get(i).lat && lng == markerList.get(i).lng) {
                 markerIsExist = true;
                 markerIsTemp = false;
             }
@@ -1312,11 +1153,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // 在臨時圖釘中尋找是否有圖釘和攝影機當前坐標一致，若一致則視爲該圖釘被點擊,不一致則視爲沒有找到指定圖釘
         for (int i=0; i<tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 markerIsExist = true;
                 markerIsTemp = true;
+
+                int finalI = i;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 延遲要執行的程式碼
+                        UserMarker userMarker = new UserMarker(0, markerCount, 0, tempMarkerList.get(finalI).markerIconIndex, tempMarkerList.get(finalI).lat, tempMarkerList.get(finalI).lng);
+                        //tempMarkerList.add(userMarker);
+
+                        sendNullCostInfoToFireBase(userMarker); // 向雲端添加一筆只包含圖釘資料的 CostInfo
+
+                        showMarkerInfo(); // 顯示剛才添加圖釘的資訊
+                        //markerCount++;
+
+                        // 清除當前圖釘並重新載入全部圖釘
+                        reloadMarker();
+
+                        Toast.makeText(getActivity(),"圖釘坐標已儲存到雲端",Toast.LENGTH_SHORT).show();
+                    }
+                }, 800);
+
+                /*
                 markerCount = 0; // 初始化單次行程内的圖釘序號（為下次添加行程做準備）
                 routeCount++; // 使用者的總行程計數增加1
+
 
                 // 為 tempMarkerList 中的圖釘添加pointCount
                 for (int j = 0; j < tempMarkerList.size(); j++) {
@@ -1351,6 +1215,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                 pointCount = 0;
                 tempMarkerList.clear();
+                */
             }
         }
 
@@ -1436,25 +1301,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     // 在 markerList 中尋找指定的圖釘，並改變圖釘Icon序號
     private void changeMarkerIcon(int markerIconIndex){
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前圖釘的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
-
         for(int i = 0; i < tempMarkerList.size(); i++){
-            if(targetLatitude == tempMarkerList.get(i).lat && targetLongitude == tempMarkerList.get(i).lng){
+            if(lat == tempMarkerList.get(i).lat && lng == tempMarkerList.get(i).lng){
                 tempMarkerList.get(i).setMarkerIconIndex(markerIconIndex);
                 changeMarkerIconFromDataBase(markerIconIndex);
                 Toast.makeText(getActivity(),"已修改圖釘樣式，icon序號為: " + markerIconIndex,Toast.LENGTH_SHORT).show();
@@ -1470,27 +1318,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void changeMarkerIconFromDataBase(int markerIconIndex) {
-        double originalLatitude; // 初始目標緯度
-        double originalLongitude; // 初始目標經度
-        double targetLatitude; // 目標緯度
-        double targetLongitude; // 目標經度
-
-        // 獲取當前在地圖中心的攝像機的坐標
-        originalLatitude = mMap.getCameraPosition().target.latitude;
-        originalLongitude = mMap.getCameraPosition().target.longitude;
-
-        // 使用 String.format() 方法，只保留坐標經緯度的16位數字（初始為17位數字），小數點的後13位數字
-        String formattedLatitude = String.format("%.11f", originalLatitude);
-        String formattedLongitude = String.format("%.11f", originalLongitude);
-        formattedLatitude = formattedLatitude.substring(0, formattedLatitude.length() - 1);
-        formattedLongitude = formattedLongitude.substring(0, formattedLongitude.length() - 1);
-        targetLatitude = Double.parseDouble(formattedLatitude);
-        targetLongitude = Double.parseDouble(formattedLongitude);
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("CostInfo");
 
         // 根據緯度和經度進行查詢
-        Query query = ref.orderByChild("latitude").equalTo(targetLatitude);
+        Query query = ref.orderByChild("latitude").equalTo(lat);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -1499,7 +1330,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     // 檢查該筆資料的經度是否與目標經度相同
                     double longitude = childSnapshot.child("longitude").getValue(Double.class);
-                    if (longitude == targetLongitude) {
+                    if (longitude == lng) {
                         // 從 Firebase Realtime Database 中更新 markerIconIndex 屬性的值
                         childSnapshot.getRef().child("markerIconIndex").setValue(markerIconIndex);
                         //Toast.makeText(getActivity(),"已修改 CostInfo 對應的圖釘樣式",Toast.LENGTH_SHORT).show();

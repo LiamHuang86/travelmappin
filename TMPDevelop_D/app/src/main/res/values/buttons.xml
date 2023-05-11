@@ -15,31 +15,13 @@
         <item>@color/main_color_02</item>
     </array>
     <array name="icons_sub">
-        <item>@drawable/ic_baseline_more_horiz_24</item>
-        <item>@drawable/ic_baseline_location_on_24</item>
         <item>@drawable/ic_baseline_star_24</item>
         <item>@drawable/ic_baseline_star_24</item>
         <item>@drawable/ic_baseline_star_24</item>
-        <item>@drawable/ic_baseline_transparent</item>
-        <item>@drawable/ic_baseline_transparent</item>
-        <item>@drawable/ic_baseline_transparent</item>
-        <item>@drawable/ic_baseline_transparent</item>
-        <item>@drawable/ic_baseline_transparent</item>
-        <item>@drawable/ic_baseline_transparent</item>
-        <item>@drawable/ic_baseline_transparent</item>
     </array>
     <array name="colors_sub">
-        <item>@android:color/white</item>
-        <item>@android:color/darker_gray</item>
         <item>#D96DB1</item>
         <item>#E1AD2D</item>
         <item>#98F6FB</item>
-        <item>@android:color/white</item>
-        <item>@android:color/white</item>
-        <item>@android:color/white</item>
-        <item>@android:color/white</item>
-        <item>@android:color/white</item>
-        <item>@android:color/white</item>
-        <item>@android:color/white</item>
     </array>
 </resources>
