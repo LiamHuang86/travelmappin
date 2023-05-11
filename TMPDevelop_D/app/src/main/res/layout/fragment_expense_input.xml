@@ -9,8 +9,8 @@
 
     <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="110dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:weightSum="100"
@@ -22,7 +22,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="?attr/textInputOutlinedStyle"
-            android:layout_width="0dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
@@ -37,8 +37,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_item_name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="240dp"
+                android:layout_height="60dp"
                 android:background="@drawable/rounded_corner"
                 android:inputType="text"
                 android:maxLines="1"
@@ -48,8 +48,9 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout4"
+        android:layout_width="250dp"
+        android:layout_height="110dp"
         android:layout_marginTop="16dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
@@ -62,7 +63,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="?attr/textInputOutlinedStyle"
-            android:layout_width="0dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="4dp"
@@ -70,8 +71,8 @@
             android:hint="消費金額"
             app:errorEnabled="true"
             app:helperText="請輸入消費金額"
-            app:helperTextTextAppearance="@style/HelperTextStyle"
             app:helperTextEnabled="true"
+            app:helperTextTextAppearance="@style/HelperTextStyle"
             app:prefixText="$"
             app:prefixTextAppearance="@style/PrefixTextAppearance"
             app:prefixTextColor="@color/text_black">
@@ -96,6 +97,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/confirm_btn"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout4"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".85" />
 
@@ -105,6 +107,7 @@
         android:layout_height="wrap_content"
         android:text="確定"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
         app:layout_constraintLeft_toRightOf="@+id/back_btn"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
