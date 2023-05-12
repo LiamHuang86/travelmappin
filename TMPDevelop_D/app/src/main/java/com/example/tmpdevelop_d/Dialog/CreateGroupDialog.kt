@@ -102,7 +102,8 @@ class CreateGroupDialog : DialogFragment(), OnUserClickListener {
 
     private fun saveGroupToFirestore(groupName: String, groupID: String, creatorId: String, photoUrl: String, memberIds: MutableList<String>) {
         val totalMembers = memberIds.size
-        val group = Group(groupName, groupID, creatorId, photoUrl, memberIds, totalMembers)
+        val group = Group(id = "", groupId = groupID, groupName = groupName, creatorId = creatorId, photoUrl = photoUrl, memberIds = memberIds, totalMembers = totalMembers)
+
 
         val docRef = FirebaseFirestore.getInstance().collection("Groups").document(groupID)
 

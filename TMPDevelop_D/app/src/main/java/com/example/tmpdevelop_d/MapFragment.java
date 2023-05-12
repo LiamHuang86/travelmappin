@@ -137,7 +137,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // 確保 ActionBar 不為空，然後設置標題
         actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("地圖");
+            actionBar.setTitle("旅行圖釘");
         }
 
         // Inflate the layout for this fragment
@@ -548,12 +548,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             //mTextView01.setText(String.format("地點名稱: %s",place.getName()));
             //mTextView02.setText(String.valueOf(place.getLatLng()));
 
+            lat = place.getLatLng().latitude;
+            lng = place.getLatLng().longitude;
+
+            // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
+            disableScrollMap();
+
             // 將視角移動至搜尋到的坐標位置
             mMap.animateCamera(CameraUpdateFactory
                     .newLatLngZoom(place.getLatLng(),18.0f));
 
             // 添加一個圖釘
-            //new Handler().postDelayed(() -> onAddButtonClick(), 1000);
+            new Handler().postDelayed(() -> onAddButtonClick(), 1000);
 
             // 檢查當前 LatLng 對應的地點是否已經有 CostInfo 存在
             //new Handler().postDelayed(() -> searchDataFromDatabase(), 1000);
@@ -636,11 +642,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         mMap.animateCamera(CameraUpdateFactory
                                 .newLatLngZoom(new LatLng(originalLocation.getLatitude(), originalLocation.getLongitude()),18.0f));
 
+                        lat = originalLocation.getLatitude();
+                        lng = originalLocation.getLongitude();
+
                         // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
-                        //disableScrollMap();
+                        disableScrollMap();
 
                         // 調用展開圓形展開按鈕主菜單的方法
-                        //new Handler().postDelayed(() -> onAddButtonClick(), 1500);
+                        new Handler().postDelayed(() -> onAddButtonClick(), 1500);
 
                         // 檢查當前 LatLng 對應的地點是否已經有 CostInfo 存在
                         //new Handler().postDelayed(() -> searchDataFromDatabase(), 1500);
@@ -662,11 +671,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 mMap.animateCamera(CameraUpdateFactory
                                         .newLatLngZoom(new LatLng(originalLocation.getLatitude(), originalLocation.getLongitude()),18.0f));
 
+                                lat = originalLocation.getLatitude();
+                                lng = originalLocation.getLongitude();
+
                                 // 暫時禁用使用者的地圖拖動手勢(目的是使圖釘固定在畫面中心)
-                                //disableScrollMap();
+                                disableScrollMap();
 
                                 // 調用展開圓形展開按鈕主菜單的方法
-                                //new Handler().postDelayed(() -> onAddButtonClick(), 1500);
+                                new Handler().postDelayed(() -> onAddButtonClick(), 1500);
                                 //new Handler().postDelayed(() -> openMainCircleMenu(mainMenu), 1500);
                             }
                         };
