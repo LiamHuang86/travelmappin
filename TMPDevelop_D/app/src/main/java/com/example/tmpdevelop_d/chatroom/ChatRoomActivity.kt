@@ -82,6 +82,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     messages.add(message)
                 }
                 chatAdapter.notifyDataSetChanged()
+                chatRecyclerView.scrollToPosition(messages.size - 1) // 将RecyclerView滚动到最底部
                 Log.d(ContentValues.TAG, "Fetched messages: $messages")
             }
         }
@@ -112,7 +113,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
             if (currentUserId != null && groupId != null) {
                 val db = Firebase.firestore
-                val messagesRef = db.collection("GroupMessages").document(groupId).collection("Messages")
+                val messagesRef =
+                    db.collection("GroupMessages").document(groupId).collection("Messages")
 
                 // 根據 Auth uid 查找 Firestore 中的 'Users' 集合中匹配的用戶
                 val usersRef = db.collection("Users")
@@ -132,22 +134,38 @@ class ChatRoomActivity : AppCompatActivity() {
                                 text = messageText,
                                 timestamp = System.currentTimeMillis()
                             )
-                            messagesRef.add(newMessage).addOnSuccessListener {
-                                messageEditText.text.clear()
-                                chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount)
-                            }.addOnFailureListener { exception ->
-                                Log.d(ContentValues.TAG, "Error sending message: ", exception)
-                            }
+                            messagesRef.orderBy("timestamp")
+                                .addSnapshotListener { snapshot, exception ->
+                                    if (exception != null) {
+                                        Log.d(
+                                            ContentValues.TAG,
+                                            "Error getting messages: ",
+                                            exception
+                                        )
+                                        return@addSnapshotListener
+                                    }
+
+                                    snapshot?.let { querySnapshot ->
+                                        val newMessages = mutableListOf<Message>()
+
+                                        for (document in querySnapshot) {
+                                            val message = document.toObject(Message::class.java)
+                                            newMessages.add(message)
+                                        }
+
+                                        messages.addAll(0, newMessages)
+                                        chatAdapter.notifyDataSetChanged()
+
+                                        chatRecyclerView.post {
+                                            chatRecyclerView.scrollToPosition(0)
+                                        }
+
+                                        Log.d(ContentValues.TAG, "Fetched messages: $messages")
+                                    }
+                                }
                         }
                     }
-                    .addOnFailureListener { exception ->
-                        Log.d(ContentValues.TAG, "Error getting user info: ", exception)
-                    }
-            } else {
-                Toast.makeText(this, "無法發送消息，請確保已加入群組。", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "請輸入消息。", Toast.LENGTH_SHORT).show()
         }
     }
 }
