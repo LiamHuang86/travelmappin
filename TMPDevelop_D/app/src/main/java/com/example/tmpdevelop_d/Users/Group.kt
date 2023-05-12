@@ -8,5 +8,5 @@ data class Group(
     val memberIds: List<String> = emptyList(),
     val totalMembers: Int = 0
 ) {
-    constructor() : this("","", "", "", emptyList(), 0)
+    constructor() : this("","", "","", emptyList(), 0)
 }

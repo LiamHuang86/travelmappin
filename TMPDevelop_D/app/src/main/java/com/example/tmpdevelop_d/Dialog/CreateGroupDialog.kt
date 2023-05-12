@@ -20,13 +20,12 @@ import com.example.tmpdevelop_d.Users.Group
 import com.example.tmpdevelop_d.Users.Users
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.google.firebase.storage.FirebaseStorage
+import java.util.*
 
 private const val DEFAULT_GROUP_IMAGE_URL = "https://your-default-image-url.com"
 
-class CreateGroupDialog : DialogFragment() {
-
-
+class CreateGroupDialog : DialogFragment(), OnUserClickListener {
 
     private lateinit var groupNameEditText: EditText
     private lateinit var groupImageView: ImageView
@@ -36,7 +35,6 @@ class CreateGroupDialog : DialogFragment() {
 
     private lateinit var userList: List<Users>
     private lateinit var selectedIds: MutableList<String>
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,53 +50,72 @@ class CreateGroupDialog : DialogFragment() {
 
         selectedIds = mutableListOf()
 
-        // 設置選擇團隊封面照片的點擊事件
         groupImageView.setOnClickListener {
-            // 啟動相冊選擇圖片
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
 
-        // 設置完成按鈕的點擊事件
         finishButton.setOnClickListener {
             val groupName = groupNameEditText.text.toString()
-            val creatorId = FirebaseAuth.getInstance().currentUser?.uid
-            val photoUrl = groupImageUri?.toString() ?: DEFAULT_GROUP_IMAGE_URL
-            val memberIds = selectedIds.toList()
-            val totalMembers = System.currentTimeMillis().toInt()
+            val groupID = generateUniqueGroupId()
+            val creatorId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-            if (groupName.isNotEmpty() && creatorId != null) {
+            if (groupName.isNotEmpty() && creatorId.isNotEmpty()) {
                 progressBar.visibility = View.VISIBLE
-                val group = Group("",groupName, creatorId, photoUrl, memberIds, totalMembers)
-                FirestoreRepository.createGroup(group) { groupId ->
-                    progressBar.visibility = View.GONE
-                    if (groupId != null) {
-                        dismiss()
-                        Toast.makeText(context, "Group created successfully", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Failed to create group", Toast.LENGTH_SHORT).show()
+
+                val memberIds = selectedIds.toMutableList()
+                memberIds.add(creatorId) // Add the creator's ID to the list of members
+
+                if (groupImageUri != null) {
+                    val storageRef =
+                        FirebaseStorage.getInstance().reference.child("group_images/${UUID.randomUUID()}")
+                    storageRef.putFile(groupImageUri!!).addOnSuccessListener { uploadTask ->
+                        storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                            saveGroupToFirestore(groupName, groupID, creatorId, downloadUri.toString(), memberIds)
+                        }.addOnFailureListener {
+                            progressBar.visibility = View.GONE
+                            Toast.makeText(
+                                context,
+                                "Failed to get image download URL",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }.addOnFailureListener {
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(context, "Failed to upload image", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    saveGroupToFirestore(groupName, groupID, creatorId, DEFAULT_GROUP_IMAGE_URL, memberIds)
                 }
             }
         }
 
-        // 加載好友列表
         FirestoreRepository.getUsers { users ->
             userList = users
-            val adapter = AddMemberAdapter(userList, object : OnUserClickListener {
-                override fun onUserClick(userId: String) {
-                    if (selectedIds.contains(userId)) {
-                        selectedIds.remove(userId)
-                    } else {
-                        selectedIds.add(userId)
-                    }
-                }
-            })
+            val adapter = AddMemberAdapter(userList, this)
             addRecyclerView.adapter = adapter
             addRecyclerView.layoutManager = LinearLayoutManager(context)
         }
 
         return view
+    }
+
+    private fun saveGroupToFirestore(groupName: String, groupID: String, creatorId: String, photoUrl: String, memberIds: MutableList<String>) {
+        val totalMembers = memberIds.size
+        val group = Group(groupName, groupID, creatorId, photoUrl, memberIds, totalMembers)
+
+        val docRef = FirebaseFirestore.getInstance().collection("Groups").document(groupID)
+
+        docRef.set(group)
+            .addOnSuccessListener {
+                progressBar.visibility = View.GONE
+                dismiss()
+                Toast.makeText(context, "Group created successfully", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                progressBar.visibility = View.GONE
+                Toast.makeText(context, "Failed to create group", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private var groupImageUri: Uri? = null
@@ -113,21 +130,56 @@ class CreateGroupDialog : DialogFragment() {
             groupImageUri = imageUri
         }
     }
-}
 
-interface OnUserClickListener {
-    fun onUserClick(userId: String)
-    fun isSelected(userId: String): Boolean {
-        return false
+    override fun onUserClick(userID: String) {
+        val user = userList.find { it.userID == userID }
+        if (user != null) {
+            val uid = user.uid
+            if (uid != null) {
+                if (selectedIds.contains(uid)) {
+                    selectedIds.remove(uid)
+                } else {
+                    selectedIds.add(uid)
+                }
+            }
+        }
+    }
+
+    override fun isSelected(userID: String): Boolean {
+        val user = userList.find { it.userID == userID }
+        return if (user != null) {
+            val uid = user.uid
+            selectedIds.contains(uid)
+        } else {
+            false
+        }
+    }
+
+    private fun generateUniqueGroupId(): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        val random = Random()
+        val groupId = StringBuilder()
+
+        for (i in 0 until 8) {
+            groupId.append(chars[random.nextInt(chars.length)])
+        }
+
+        return groupId.toString()
     }
 }
 
-class AddMemberAdapter(
+interface OnUserClickListener {
+    fun onUserClick(uid: String)
+    fun isSelected(uid: String): Boolean
+}
 
+
+class AddMemberAdapter(
     private val userList: List<Users>,
     private val listener: OnUserClickListener
 ) : RecyclerView.Adapter<AddMemberAdapter.ViewHolder>() {
 
+    private val selectedUsers = mutableSetOf<String>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -135,23 +187,21 @@ class AddMemberAdapter(
         return ViewHolder(view)
     }
 
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = userList[position]
         holder.bind(user)
-        holder.itemView.setOnClickListener {
-            listener.onUserClick(user.userID)
-            holder.friendCheckBox.isChecked = holder.friendCheckBox.isChecked.not()
-        }
+
+        holder.friendCheckBox.setOnCheckedChangeListener(null)
+        holder.friendCheckBox.isChecked = isSelected(user.userID)
+
         holder.friendCheckBox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                listener.onUserClick(user.userID)
+                selectedUsers.add(user.userID)
             } else {
-                listener.onUserClick(user.userID)
+                selectedUsers.remove(user.userID)
             }
+            listener.onUserClick(user.userID)
         }
-
-        holder.friendCheckBox.isChecked = listener.isSelected(user.userID)
     }
 
     override fun getItemCount(): Int {
@@ -173,38 +223,33 @@ class AddMemberAdapter(
                 .into(friendImage)
         }
     }
+
+    private fun isSelected(userId: String): Boolean {
+        return selectedUsers.contains(userId)
+    }
 }
+
 object FirestoreRepository {
     private val firestore = FirebaseFirestore.getInstance()
 
     fun getUsers(onResult: (List<Users>) -> Unit) {
-        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
         firestore.collection("Users")
-            .whereNotEqualTo("uid", currentUserUid)
             .get()
             .addOnSuccessListener { result ->
                 val userList = mutableListOf<Users>()
                 for (document in result) {
                     val user = document.toObject(Users::class.java)
-                    userList.add(user)
+                    if (user.uid != currentUserId) { // 只添加不是当前登录用户的其他用户
+                        userList.add(user)
+                    }
                 }
                 onResult(userList)
             }
             .addOnFailureListener { exception ->
                 Log.d(TAG, "Error getting users", exception)
                 onResult(emptyList())
-            }
-    }
-
-    fun createGroup(group: Group, onResult: (String?) -> Unit) {
-        firestore.collection("groups")
-            .add(group)
-            .addOnSuccessListener { documentReference ->
-                onResult(documentReference.id)
-            }
-            .addOnFailureListener { exception ->
-                Log.d(TAG, "Error creating group", exception)
-                onResult(null)
             }
     }
 }
