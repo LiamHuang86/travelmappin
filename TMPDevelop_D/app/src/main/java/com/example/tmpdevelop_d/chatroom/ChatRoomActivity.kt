@@ -116,17 +116,14 @@ class ChatRoomActivity : AppCompatActivity() {
                 val messagesRef =
                     db.collection("GroupMessages").document(groupId).collection("Messages")
 
-                // 根據 Auth uid 查找 Firestore 中的 'Users' 集合中匹配的用戶
                 val usersRef = db.collection("Users")
                 usersRef.whereEqualTo("uid", currentUserId).get()
                     .addOnSuccessListener { documents ->
                         for (document in documents) {
                             val user = document.toObject(Users::class.java)
-                            // 使用找到的用戶對象獲取姓名和頭像 URL
                             val senderName = user.username
                             val senderImageUrl = user.imageUrl
 
-                            // 創建新的消息並添加到 Firestore
                             val newMessage = Message(
                                 senderName = senderName,
                                 senderId = currentUserId,
@@ -134,34 +131,18 @@ class ChatRoomActivity : AppCompatActivity() {
                                 text = messageText,
                                 timestamp = System.currentTimeMillis()
                             )
-                            messagesRef.orderBy("timestamp")
-                                .addSnapshotListener { snapshot, exception ->
-                                    if (exception != null) {
-                                        Log.d(
-                                            ContentValues.TAG,
-                                            "Error getting messages: ",
-                                            exception
-                                        )
-                                        return@addSnapshotListener
-                                    }
 
-                                    snapshot?.let { querySnapshot ->
-                                        val newMessages = mutableListOf<Message>()
-
-                                        for (document in querySnapshot) {
-                                            val message = document.toObject(Message::class.java)
-                                            newMessages.add(message)
-                                        }
-
-                                        messages.addAll(0, newMessages)
-                                        chatAdapter.notifyDataSetChanged()
-
-                                        chatRecyclerView.post {
-                                            chatRecyclerView.scrollToPosition(0)
-                                        }
-
-                                        Log.d(ContentValues.TAG, "Fetched messages: $messages")
-                                    }
+                            messagesRef.add(newMessage)
+                                .addOnSuccessListener {
+                                    Log.d(
+                                        ContentValues.TAG,
+                                        "Successfully sent message: $newMessage"
+                                    )
+                                    messageEditText.text.clear()
+                                    chatRecyclerView.scrollToPosition(messages.size - 1)
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.d(ContentValues.TAG, "Error sending message: ", exception)
                                 }
                         }
                     }
