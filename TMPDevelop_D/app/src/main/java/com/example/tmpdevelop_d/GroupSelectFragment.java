@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -128,6 +129,8 @@ public class GroupSelectFragment extends Fragment implements View.OnClickListene
 
     private void getFriendInfoList() {
         String collectionName = "Users"; // 集合名稱
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //Toast.makeText(getActivity(),"當前使用者ID: "+currentUserID, Toast.LENGTH_SHORT).show();
 
         db.collection(collectionName)
                 .get()
@@ -163,42 +166,47 @@ public class GroupSelectFragment extends Fragment implements View.OnClickListene
 
     private void setGroupInfoList() {
         CollectionReference groupsCollection = db.collection("Groups");
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // 獲取當前使用者id
         groupsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 // 遍歷所有 group 文件的快照
                 for (QueryDocumentSnapshot groupDoc : queryDocumentSnapshots) {
 
-                    // 讀取 groupName 和 photoUrl
-                    String groupName = groupDoc.getString("groupName");
-                    String avatar = groupDoc.getString("photoUrl");
-
                     // 讀取 memberIds 數組
                     List<String> memberIds = (List<String>) groupDoc.get("memberIds");
 
-                    // 創建一個臨時的 friendInfoList
-                    List<UserInfo> friendInfoListTemp = new ArrayList<>();
+                    // 如果 memberIds 包含當前使用者id，才處理這個群組
+                    if (memberIds.contains(currentUserId)) {
 
-                    // 遍歷每個 memberId
-                    for (String memberId : memberIds) {
+                        // 讀取 groupName 和 photoUrl
+                        String groupName = groupDoc.getString("groupName");
+                        String avatar = groupDoc.getString("photoUrl");
 
-                        // 遍歷 friendInfoList，尋找符合 memberId 的 UserInfo 對象
-                        for (UserInfo friendInfo : friendInfoList) {
+                        // 創建一個臨時的 friendInfoList
+                        List<UserInfo> friendInfoListTemp = new ArrayList<>();
 
-                            // 如果找到符合的 userId，将其添加到 friendInfoListTemp 中
-                            if (friendInfo.getUserId().equals(memberId)) {
-                                friendInfoListTemp.add(friendInfo);
-                                break;
+                        // 遍歷每個 memberId
+                        for (String memberId : memberIds) {
+
+                            // 遍歷 friendInfoList，尋找符合 memberId 的 UserInfo 對象
+                            for (UserInfo friendInfo : friendInfoList) {
+
+                                // 如果找到符合的 userId，将其添加到 friendInfoListTemp 中
+                                if (friendInfo.getUserId().equals(memberId)) {
+                                    friendInfoListTemp.add(friendInfo);
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    // 創建一個新的 GroupInfo 對象，並將群組資訊添加到 groupInfoList 中
-                    GroupInfo groupInfo = new GroupInfo(groupName, friendInfoListTemp, avatar);
-                    groupInfoList.add(groupInfo);
+                        // 創建一個新的 GroupInfo 對象，並將群組資訊添加到 groupInfoList 中
+                        GroupInfo groupInfo = new GroupInfo(groupName, friendInfoListTemp, avatar);
+                        groupInfoList.add(groupInfo);
+                    }
                 }
 
-                // 成功獲取到所有 groupInfoList ，實例化 RecycleView
+                // 成功獲取到所有符合條件的 groupInfoList ，實例化 RecycleView
                 initRecycleView();
             }
         });
