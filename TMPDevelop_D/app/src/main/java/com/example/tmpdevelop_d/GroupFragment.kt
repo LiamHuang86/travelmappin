@@ -49,7 +49,6 @@ class GroupFragment : Fragment() {
             val intent = Intent(requireContext(), AccountActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ACCOUNT_ACTIVITY)
         }
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         return root
     }
