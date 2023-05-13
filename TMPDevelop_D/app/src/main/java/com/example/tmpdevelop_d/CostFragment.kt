@@ -92,6 +92,9 @@ class CostFragment : Fragment() {
                     append("平均消費: ${String.format("%.2f", item.averageCost)}\n")
                     append("日期: ${item.date}\n")
                     append("時間: ${item.hour}點  ${item.minute}分\n")
+                    append("欠款者: \n${
+                        item.friendInfoList.filter { it.name != item.payerName }.joinToString(", ") { it.name }
+                    }\n")
                     // 這裡只顯示朋友列表的大小，您可能需要適當的方式來顯示朋友列表的資訊
 
                 }
